@@ -13,7 +13,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 	private static final List<Product> products = allProducts();
 	
 	@Override
-	public List<Product> list() {
+	public List<Product> findAll() {
 		return products;
 	}
 
