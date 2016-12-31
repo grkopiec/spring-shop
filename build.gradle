@@ -1,0 +1,61 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.akhikhl.gretty'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+   	//flatDir {
+	//	dirs 'src/main/resources/libs'	//indicate path to jar file
+   	//}
+    mavenCentral()
+}
+
+dependencies {
+	compile 'org.springframework:spring-webmvc:4.3.5.RELEASE'
+	//compile 'org.apache.commons:commons-dbcp2:2.1.1'	//for jndi dataSource
+	compile 'javax.servlet:jstl:1.2'
+	
+	compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
+	
+	testCompile 'junit:junit:4.12'
+	
+	//compile name: 'ojdbc6'	//indicate jar file from local repository, we do not need write extension
+
+	gretty 'org.apache.tomcat:tomcat-dbcp:8.0.39'	//must be "gretty", in other case will not be work
+}
+
+test {
+	testLogging {
+		events 'started', 'passed'
+		showStandardStreams = true
+		showStackTraces = true
+		showExceptions = true
+		showCauses = true
+		exceptionFormat = 'full'
+	}
+}
+
+buildscript {
+	repositories {
+	    mavenCentral()
+	}
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:+'
+    }
+}
+
+gretty {
+    //port = 8080	//it is default
+    contextPath = '/'
+    servletContainer = 'tomcat8'	//set server
+    //contextConfigFile = 'context.xml'	//choose JNDI configuration file
+    //enableNaming = true	//allow use tomcat JNDI
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.2'
+}
+
