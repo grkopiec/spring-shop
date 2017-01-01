@@ -3,6 +3,8 @@ package pl.shop.repository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +25,45 @@ public class ProductRepositoryImpl implements ProductRepository {
 				.filter(p -> p.getId() == id)
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("Did not find requested product"));
+	}
+	
+	@Override
+	public List<Product> findByCategory(String category) {
+		List<Product> list = products.stream()
+				.filter(p -> p.getCategory().equalsIgnoreCase(category))
+				.collect(Collectors.toList());
+		if (list.isEmpty()) {
+			throw new IllegalArgumentException("Did not find elements for category: " + category);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<Product> findByManufacturer(String manufacturer) {
+		List<Product> list = products.stream()
+				.filter(p -> p.getManufacturer().equalsIgnoreCase(manufacturer))
+				.collect(Collectors.toList());
+		if (list.isEmpty()) {
+			throw new IllegalArgumentException("Did not find elements for manufacturer: " + manufacturer);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<Product> findByCriteria(Map<String, List<String>> filterParams) {
+		List<String> brandCriteria = filterParams.get("brand").stream().map(f -> f.toLowerCase()).collect(Collectors.toList());
+		List<String> categoryCriteria = filterParams.get("category").stream().map(f -> f.toLowerCase()).collect(Collectors.toList());
+		
+		List<Product> list = products.stream()
+				.filter(p -> brandCriteria.contains(p.getManufacturer().toLowerCase()))
+				.filter(p -> categoryCriteria.contains(p.getCategory().toLowerCase()))
+				.collect(Collectors.toList());
+				
+		if (list.isEmpty()) {
+			throw new IllegalArgumentException("Did not find elements");
+		}
+		
+		return list;
 	}
 
 	private static List<Product> allProducts() {

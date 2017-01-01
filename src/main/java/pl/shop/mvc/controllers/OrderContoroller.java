@@ -14,7 +14,7 @@ public class OrderContoroller {
 	private OrderService orderService;
 	
 	@RequestMapping("/order/{productId}")
-	public String order(@PathVariable Long productId, @RequestParam("quantity") Long quantity) {
+	public String order(@PathVariable Long productId, @RequestParam Long quantity) {
 		orderService.processOrder(productId, quantity);
 		return "redirect:/products";
 	}
