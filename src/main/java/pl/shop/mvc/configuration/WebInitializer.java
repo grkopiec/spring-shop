@@ -1,4 +1,4 @@
-package pl.shop.mvc.config;
+package pl.shop.mvc.configuration;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 

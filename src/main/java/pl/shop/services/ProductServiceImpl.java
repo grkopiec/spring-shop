@@ -48,4 +48,9 @@ public class ProductServiceImpl implements ProductService {
 				.filter(p -> p.getPrice().compareTo(filterPrice.get("min")) >= 0  && p.getPrice().compareTo(filterPrice.get("max")) <= 0)
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public void addProduct(Product product) {
+		productRepository.addProduct(product);
+	}
 }

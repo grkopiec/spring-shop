@@ -65,6 +65,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 		
 		return list;
 	}
+	
+	@Override
+	public void addProduct(Product product) {
+		products.add(product);
+	}
 
 	private static List<Product> allProducts() {
 		Product iPhone = new Product();

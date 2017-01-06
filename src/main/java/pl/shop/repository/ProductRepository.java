@@ -11,4 +11,5 @@ public interface ProductRepository {
 	public List<Product> findByCategory(String category);
 	public List<Product> findByManufacturer(String manufacturer);
 	public List<Product> findByCriteria(Map<String, List<String>> filterParams);
+	public void addProduct(Product product);
 }

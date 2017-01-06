@@ -12,4 +12,5 @@ public interface ProductService {
 	public List<Product> findByCategory(String category);
 	public List<Product> findByCriteria(Map<String, List<String>> filterParams);
 	public List<Product> findByCategoryPriceManufacturer(String category, String manufacturer, Map<String, BigDecimal> filterPrice);
+	public void addProduct(Product product);
 }

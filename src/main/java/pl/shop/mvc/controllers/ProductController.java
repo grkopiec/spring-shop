@@ -8,12 +8,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.MatrixVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import pl.shop.domain.Product;
 import pl.shop.services.ProductService;
 
 @Controller
@@ -67,5 +74,32 @@ public class ProductController {
 		map.put("max", BigDecimal.valueOf(Double.valueOf(filterPrice.get("max"))));
 		model.addAttribute(productService.findByCategoryPriceManufacturer(category, manufacturer, map));
 		return "products";
+	}
+	
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	public String addProductForm(Model model) {
+		Product product = new Product();
+		model.addAttribute(product);
+		return "addProduct";
+	}
+	
+/*	@RequestMapping(value = "/add", method = RequestMethod.GET)	//we can also use shorter version
+	public String addProductFormUsingAnnotation(@ModelAttribute("product") Product product) {
+		return "addProduct";
+	}*/
+	//indicate fields that should not be changing during filling form
+	@InitBinder
+	public void initialiseBinder(WebDataBinder webDataBinder) {
+		webDataBinder.setDisallowedFields("inOrder", "discontinued");
+	}
+	
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	public String addProduct(@ModelAttribute("product") Product product, BindingResult bindingResult) {
+		String[] suppressedFields = bindingResult.getSuppressedFields();	//get fields that were changed
+		if (suppressedFields.length > 0) {	//if somebody changed do not allowed fields throw exception
+			throw new RuntimeException("Tried binding not allowed fields: " + StringUtils.arrayToCommaDelimitedString(suppressedFields));
+		}
+		productService.addProduct(product);
+		return "redirect:/products";
 	}
 }
