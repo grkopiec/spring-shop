@@ -2,8 +2,20 @@ package pl.shop.domain;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@XmlRootElement
 public class Product {
 	private Long id;
+	@JsonIgnore
+	private MultipartFile image;
+	@JsonIgnore
+	private MultipartFile manual;
 	private String name;
 	private BigDecimal price;
 	private String description;
@@ -21,7 +33,25 @@ public class Product {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	@XmlTransient
+	public MultipartFile getImage() {
+		return image;
+	}
 
+	public void setImage(MultipartFile image) {
+		this.image = image;
+	}
+	
+	@XmlTransient
+	public MultipartFile getManual() {
+		return manual;
+	}
+	
+	public void setManual(MultipartFile manual) {
+		this.manual = manual;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -121,8 +151,9 @@ public class Product {
 
 	@Override
 	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", price=" + price + ", description=" + description
-				+ ", manufacturer=" + manufacturer + ", category=" + category + ", inStock=" + inStock + ", inOrder="
-				+ inOrder + ", discontinued=" + discontinued + ", condition=" + condition + "]";
+		return "Product [id=" + id + ", image=" + image + ", manual=" + manual + ", name=" + name + ", price=" + price
+				+ ", description=" + description + ", manufacturer=" + manufacturer + ", category=" + category
+				+ ", inStock=" + inStock + ", inOrder=" + inOrder + ", discontinued=" + discontinued + ", condition="
+				+ condition + "]";
 	}
 }

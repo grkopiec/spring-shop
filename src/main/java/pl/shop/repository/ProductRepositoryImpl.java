@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import pl.shop.domain.Product;
+import pl.shop.exceptions.NoProductsFoundException;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
@@ -33,7 +34,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 				.filter(p -> p.getCategory().equalsIgnoreCase(category))
 				.collect(Collectors.toList());
 		if (list.isEmpty()) {
-			throw new IllegalArgumentException("Did not find elements for category: " + category);
+			throw new NoProductsFoundException(category);
 		}
 		return list;
 	}

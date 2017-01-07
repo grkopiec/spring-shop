@@ -19,8 +19,9 @@
 		</section>
 		<section class="container">
 			<div class="row">
-				<div class="col-xs-12 col-sm-9 col-md-6 col-lg-3">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div class="thumbnail">
+						<img src="<spring:url value="/resources/images/${product.id}.png" />" alt="image" />
 						<div class="caption">
 							<h3>${product.name}</h3>
 							<p>${product.description}</p>

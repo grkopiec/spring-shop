@@ -1,5 +1,8 @@
 package pl.shop.mvc.configuration;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration.Dynamic;
+
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -19,4 +22,9 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 		return new String[] {"/"};
 	}
 
+	@Override
+	protected void customizeRegistration(Dynamic registration) {
+		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tempdir"), 1048576, 1048576, 0);
+		registration.setMultipartConfig(multipartConfigElement);
+	}
 }

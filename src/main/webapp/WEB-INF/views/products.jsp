@@ -21,8 +21,9 @@
 		<section class="container">
 			<div class="row">
 				<c:forEach items="${productList}" var="product">
-					<div class="col-xs-12 col-sm-9 col-md-6 col-lg-3">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 						<div class="thumbnail">
+							<img src="<spring:url value="/resources/images/${product.id}.png" />" alt="image" />
 							<div class="caption">
 								<h3>${product.name}</h3>
 								<p>${product.description}</p>

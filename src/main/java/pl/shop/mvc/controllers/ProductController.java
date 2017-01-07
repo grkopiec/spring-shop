@@ -1,9 +1,15 @@
 package pl.shop.mvc.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,9 +25,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import pl.shop.domain.Product;
+import pl.shop.exceptions.NoProductFoundForIdException;
+import pl.shop.exceptions.NoProductsFoundException;
 import pl.shop.services.ProductService;
 
 @Controller
@@ -45,7 +56,12 @@ public class ProductController {
 	
 	@RequestMapping("/{category}")
 	public String byCategory(Model model, @PathVariable String category) {
-		model.addAttribute(productService.findByCategory(category));
+		List<Product> products = productService.findByCategory(category);
+		if (products == null || products.isEmpty()) {
+			throw new NoProductsFoundException(category);
+		}
+		
+		model.addAttribute(products);
 		return "products";
 	}
 	//example URL paths:
@@ -61,8 +77,18 @@ public class ProductController {
 	
 	@RequestMapping("/product")
 	public String byId(Model model, @RequestParam Long id) {
+		Product product = productService.findById(id);
+		if (product == null) {
+			throw new NoProductFoundForIdException();
+		}
+		
 		model.addAttribute(productService.findById(id));
 		return "product";
+	}
+	
+	@RequestMapping(value = "/productt", produces = {"application/xml", "application/json"})	//return json or xml
+	public @ResponseBody Product byIdJson(Model model, @RequestParam Long id) {
+		return  productService.findById(id);
 	}
 	//example URL
 	//http://localhost:8080/products/tablet/price;min=500;max=2000?manufacturer=Google
@@ -94,12 +120,39 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String addProduct(@ModelAttribute("product") Product product, BindingResult bindingResult) {
+	public String addProduct(@ModelAttribute("product") Product product, BindingResult bindingResult, HttpServletRequest request) throws IllegalStateException, IOException {
 		String[] suppressedFields = bindingResult.getSuppressedFields();	//get fields that were changed
 		if (suppressedFields.length > 0) {	//if somebody changed do not allowed fields throw exception
 			throw new RuntimeException("Tried binding not allowed fields: " + StringUtils.arrayToCommaDelimitedString(suppressedFields));
 		}
+		
+		MultipartFile image = product.getImage();
+		MultipartFile manual = product.getManual();
+		HttpSession httpSession = request.getSession();
+		ServletContext servletContext = httpSession.getServletContext();
+			
+		if (image != null && !image.isEmpty()) {
+			String directory = servletContext.getRealPath("/resources/images/");
+			String fullPath = directory + "" + product.getId() + ".png";
+			File file = new File(fullPath);
+			image.transferTo(file);
+		}
+		if (manual != null && !manual.isEmpty()) {
+			String directory = servletContext.getRealPath("/resources/pdfs/");
+			String fullPath = directory + "" + product.getId() + ".pdf";
+			File file = new File(fullPath);
+			manual.transferTo(file);
+		}
+		
 		productService.addProduct(product);
 		return "redirect:/products";
+	}
+	
+	@ExceptionHandler(NoProductsFoundException.class)
+	public String handleError(Model model, NoProductsFoundException exception, HttpServletRequest request) {
+		model.addAttribute("category", exception.getCategory());
+		model.addAttribute("exception", exception);
+		model.addAttribute("url", request.getRequestURL());
+		return "productNotFound";
 	}
 }

@@ -21,13 +21,29 @@
 			</div>
 		</section>
 		<section class="container">
-			<form:form modelAttribute="product" class="form-horizontal">
+			<form:form modelAttribute="product" class="form-horizontal" enctype="multipart/form-data">
 				<fieldset>
 					<legend>Add new product</legend>
 					<div class="form-group">
 						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">Product name</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="name" path="name" type="text" class="form input-large" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">
+							<spring:message code="addProduct.form.productImage" />
+						</label>
+						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+							<form:input id="image" path="image" type="file" class="form input-large" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">
+							<spring:message code="addProduct.form.productManual" />
+						</label>
+						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+							<form:input id="manual" path="manual" type="file" class="form input-large" />
 						</div>
 					</div>
 					<div class="form-group">
