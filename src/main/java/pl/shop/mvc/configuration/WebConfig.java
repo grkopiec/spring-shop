@@ -1,36 +1,40 @@
 package pl.shop.mvc.configuration;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.http.MediaType;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.accept.ContentNegotiationStrategy;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
-import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.BeanNameViewResolver;
-import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-import org.springframework.web.servlet.view.xml.MarshallingView;
 import org.springframework.web.util.UrlPathHelper;
+
+import pl.shop.mvc.interceptors.AuditingInterceptor;
+import pl.shop.mvc.interceptors.PerformanceInterceptor;
+import pl.shop.mvc.interceptors.PromoCodeInterceptor;
 
 @EnableWebMvc	//<mvc:annotation-driven /> enable spring annotation
 @Configuration
 @ComponentScan(basePackages = "pl.shop.mvc.controllers")	//load controller "AppController.java"
 public class WebConfig extends WebMvcConfigurerAdapter {
+	@Autowired
+	private PerformanceInterceptor performanceInterceptor;
+	@Autowired
+	private AuditingInterceptor auditingInterceptor;
+	
 	@Override	//for resources location, resources for css, js
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
@@ -73,5 +77,45 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
+	}
+	
+//    @Bean	//keep locale in cookies
+//    public LocaleResolver localeResolver(){	//if we select any language then this bean save it for session 
+//		CookieLocaleResolver resolver = new CookieLocaleResolver();
+//		resolver.setDefaultLocale(new Locale("en"));	//default language
+//		resolver.setCookieName("myLocaleCookie");	//language cookie name
+//		resolver.setCookieMaxAge(4800);	//date of expire language in cookie
+//		return resolver;
+//    }
+	
+	@Bean	//keep locale in session
+	public LocaleResolver localeResolver() {
+		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+		localeResolver.setDefaultLocale(Locale.ENGLISH);
+		return localeResolver;
+	}
+	
+	@Bean
+	public LocaleChangeInterceptor localeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("language");
+        return interceptor;
+	}
+	
+	@Bean
+	public PromoCodeInterceptor promoInterceptor() {
+		PromoCodeInterceptor promoInterceptor = new PromoCodeInterceptor();
+		promoInterceptor.setPromoCode("ABCD");
+		promoInterceptor.setOfferRedirect("/products/product");
+		promoInterceptor.setErrorRedirect("/products/invalidCode");
+		return promoInterceptor;
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(performanceInterceptor);
+		registry.addInterceptor(localeInterceptor());
+		registry.addInterceptor(auditingInterceptor);
+		registry.addInterceptor(promoInterceptor());
 	}
 }

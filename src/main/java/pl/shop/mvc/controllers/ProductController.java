@@ -147,6 +147,12 @@ public class ProductController {
 		productService.addProduct(product);
 		return "redirect:/products";
 	}
+	//url with right code: http://localhost:8080/products/specialOffer?promo=ABCD
+	//url with wrong code: http://localhost:8080/products/specialOffer?promo"sldkjf
+	@RequestMapping("/invalidCode")
+	public String invalidCode() {
+		return "invalidCode";
+	}
 	
 	@ExceptionHandler(NoProductsFoundException.class)
 	public String handleError(Model model, NoProductsFoundException exception, HttpServletRequest request) {
