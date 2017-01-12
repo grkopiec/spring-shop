@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -34,6 +36,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	private PerformanceInterceptor performanceInterceptor;
 	@Autowired
 	private AuditingInterceptor auditingInterceptor;
+	@Autowired
+	LocalValidatorFactoryBean localValidatorFactoryBean;
 	
 	@Override	//for resources location, resources for css, js
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -117,5 +121,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		registry.addInterceptor(localeInterceptor());
 		registry.addInterceptor(auditingInterceptor);
 		registry.addInterceptor(promoInterceptor());
+	}
+	
+	@Override
+	public Validator getValidator() {
+		localValidatorFactoryBean.setValidationMessageSource(messageSource());
+		return localValidatorFactoryBean;
 	}
 }

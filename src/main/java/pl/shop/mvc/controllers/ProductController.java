@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,12 +34,15 @@ import pl.shop.domain.Product;
 import pl.shop.exceptions.NoProductFoundForIdException;
 import pl.shop.exceptions.NoProductsFoundException;
 import pl.shop.services.ProductService;
+import pl.shop.validation.ProductValidator;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 	@Autowired
 	private ProductService productService;
+	@Autowired
+	private ProductValidator productValidator;
 	
 	@RequestMapping
 	public String list(Model model) {
@@ -117,10 +121,15 @@ public class ProductController {
 	@InitBinder
 	public void initialiseBinder(WebDataBinder webDataBinder) {
 		webDataBinder.setDisallowedFields("inOrder", "discontinued");
+		webDataBinder.setValidator(productValidator);
 	}
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String addProduct(@ModelAttribute("product") Product product, BindingResult bindingResult, HttpServletRequest request) throws IllegalStateException, IOException {
+	public String addProduct(@ModelAttribute("product") @Valid Product product, BindingResult bindingResult, HttpServletRequest request) throws IllegalStateException, IOException {
+		if (bindingResult.hasErrors()) {
+			return "addProduct";
+		}
+		
 		String[] suppressedFields = bindingResult.getSuppressedFields();	//get fields that were changed
 		if (suppressedFields.length > 0) {	//if somebody changed do not allowed fields throw exception
 			throw new RuntimeException("Tried binding not allowed fields: " + StringUtils.arrayToCommaDelimitedString(suppressedFields));

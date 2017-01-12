@@ -47,24 +47,27 @@
 					<legend>
 						<spring:message code="addProduct.form.legend" />
 					</legend>
+					<form:errors path="*" cssClass="alert alert-danger" element="div" />
 					<div class="form-group">
 						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">
 							<spring:message code="addProduct.form.productName" />
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="name" path="name" type="text" class="form input-large" />
+							<form:errors path="name" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">
+						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="image">
 							<spring:message code="addProduct.form.productImage" />
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="image" path="image" type="file" class="form input-large" />
+							<form:errors path="image" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="name">
+						<label class="control-label col-xs-2 col-sm-2 col-md-2 col-lg-2" for="manual">
 							<spring:message code="addProduct.form.productManual" />
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
@@ -85,6 +88,7 @@
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="id" path="id" type="text" class="form input-large" />
+							<form:errors path="id" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -101,6 +105,7 @@
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="category" path="category" type="text" class="form input-large" />
+							<form:errors path="category" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -109,6 +114,7 @@
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="inStock" path="inStock" type="text" class="form input-large" />
+							<form:errors path="inStock" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -125,6 +131,7 @@
 						</label>
 						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
 							<form:input id="price" path="price" type="text" class="form input-large" />
+							<form:errors path="price" cssClass="text-danger" />
 						</div>
 					</div>
 					<div class="form-group">

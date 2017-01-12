@@ -2,25 +2,45 @@ package pl.shop.domain;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import pl.shop.validation.ProductCategory;
+import pl.shop.validation.ProductId;
+
 @XmlRootElement
 public class Product {
+	//@Pattern can not be applied for number objects, it is java pattern
+	@ProductId
+	//for configuration only for javax.validation.Validation we need around message by {...}
+	@NotNull(message = "validation.product.id.null")
 	private Long id;
 	@JsonIgnore
 	private MultipartFile image;
 	@JsonIgnore
 	private MultipartFile manual;
+	//if we put in "message" parameter value like: "message = "name is required"" then we show this communicate directly
+	@Size(min = 4, max = 50, message = "validation.product.name")
 	private String name;
+	@Min(value = 0, message = "validation.product.price.min")
+	@Digits(integer = 8, fraction = 2, message = "validation.product.price.digits")
+	@NotNull(message = "validation.product.price.null")
 	private BigDecimal price;
 	private String description;
 	private String manufacturer;
+	@ProductCategory
+	@NotBlank(message = "validation.product.category")
 	private String category;
+	@Min(value = 0, message = "validation.product.inStock")
 	private Long inStock;
 	private Long inOrder;
 	private Boolean discontinued;
