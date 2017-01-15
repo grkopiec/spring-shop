@@ -17,4 +17,9 @@ public class CustomerController {
 		model.addAttribute(customerService.findAll());
 		return "customers";
 	}
+	
+	@RequestMapping("/cart")
+	public String cart() {
+		return "cart";
+	}
 }

@@ -37,7 +37,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	private AuditingInterceptor auditingInterceptor;
 	@Autowired
-	LocalValidatorFactoryBean localValidatorFactoryBean;
+	private LocalValidatorFactoryBean localValidatorFactoryBean;
 	
 	@Override	//for resources location, resources for css, js
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
